@@ -1,0 +1,70 @@
+[gd_scene load_steps=8 format=3 uid="uid://bvdsgy0uj4jf0"]
+
+[ext_resource type="Script" path="res://script/unit.gd" id="1_lxpws"]
+[ext_resource type="Script" path="res://script/unit_navigation_slide.gd" id="2_kaubn"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rqou6"]
+specular_mode = 2
+albedo_color = Color(0, 0.74, 0.0493333, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_4bcov"]
+material = SubResource("StandardMaterial3D_rqou6")
+radius = 1.0
+height = 4.0
+radial_segments = 6
+rings = 4
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5shhi"]
+size = Vector3(1.5, 3.5, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uuaal"]
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+disable_ambient_light = true
+disable_fog = true
+albedo_color = Color(1, 0, 0, 1)
+texture_filter = 0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_pkblq"]
+material = SubResource("StandardMaterial3D_uuaal")
+bottom_radius = 0.0
+height = 1.0
+radial_segments = 8
+rings = 2
+
+[node name="unit" type="CharacterBody3D" node_paths=PackedStringArray("navigation_agent")]
+collision_layer = 4
+collision_mask = 4
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+script = ExtResource("1_lxpws")
+navigation_agent = NodePath("NavigationAgent")
+
+[node name="MeshInstance" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.90062, 0)
+mesh = SubResource("CapsuleMesh_4bcov")
+
+[node name="CollisionShape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.89478, 0)
+shape = SubResource("BoxShape3D_5shhi")
+
+[node name="NavigationAgent" type="NavigationAgent3D" parent="." node_paths=PackedStringArray("this_unit")]
+path_max_distance = 7.01
+path_postprocessing = 1
+path_metadata_flags = 0
+simplify_path = true
+avoidance_enabled = true
+height = 3.5
+radius = 1.0
+neighbor_distance = 30.0
+max_neighbors = 30
+debug_enabled = true
+script = ExtResource("2_kaubn")
+this_unit = NodePath("..")
+
+[node name="direction" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 2, -1.5)
+mesh = SubResource("CylinderMesh_pkblq")
+
+[connection signal="velocity_computed" from="NavigationAgent" to="NavigationAgent" method="_on_velocity_computed"]
